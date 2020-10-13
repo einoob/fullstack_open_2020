@@ -9,11 +9,11 @@ const StatisticLine = ({text, value}) => {
   if (text === 'positive')
   {
     return (
-      <div>{text} {value} %</div>
+      <tr><td>{text}</td><td>{value} %</td></tr>
     )
   }
   return (
-    <div>{text} {value}</div>
+    <tr><td>{text}</td><td>{value}</td></tr>
   )
 }
 
@@ -27,12 +27,16 @@ const Statistics = ({stats}) => {
   }
   return (
     <div>
+      <table>
+        <tbody>
       <StatisticLine text='good' value={stats.good} />
       <StatisticLine text='neutral' value={stats.neutral} />
       <StatisticLine text='bad' value={stats.bad} />
       <StatisticLine text='average'
       value={(stats.bad * -1 + stats.good) / stats.sum} />
       <StatisticLine text='positive' value={(stats.good / stats.sum * 100.0)} />
+        </tbody>
+      </table>
     </div>
   )
 }
