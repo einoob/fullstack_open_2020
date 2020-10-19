@@ -3,6 +3,8 @@ import axios from 'axios'
 import Personform from './components/Personform'
 import Filterform from './components/Filterform'
 import Persons from './components/Persons'
+import contactService from './services/contactService'
+
 
 const App = () => {
   const [ persons, setPersons] = useState([])
@@ -20,22 +22,61 @@ const App = () => {
   }, [])
 	
 	const addPerson = (event) => {
-		event.preventDefault()
+    event.preventDefault()
 		const newObj = {
       name: newName,
-      number: newNumber
+      number: newNumber,
     }
-    console.log(newName); //remove later
+    console.log(newName)
     if (persons.map(person =>
-      person.name).includes(newName)) {
-      alert(`${newName} is already added to phonebook`)
+      person.name.toLowerCase()).includes(newName.toLowerCase())) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const contact = persons.find(p => p.name.toLowerCase() === newName.toLowerCase())
+        console.log('old', contact)
+        const changedContact = {...contact, name: newName, number: newNumber}
+        console.log('new', changedContact)   
+        contactService
+        .update(changedContact.id, changedContact)
+        .then((returnedContact) => {
+          setPersons(persons.map(p => p.name.toLowerCase() === changedContact.name.toLowerCase() ? returnedContact : p))
+        })
+      }
+      else {
+        contactService
+        .getAll()
+        .then(list => {
+          setPersons(list)
+        })
+      }
       setNewName('')
       setNewNumber('')
     }
     else {
-		  setPersons(persons.concat(newObj))
-      setNewName('')
-      setNewNumber('')
+      contactService.create(newObj)
+      .then(newContact => {
+        setPersons(persons.concat(newContact))
+        setNewName('')
+        setNewNumber('')
+      })
+    }
+  }
+
+  const removeContact = ({person}) => {
+    console.log('person data', person.name)
+    const id = person.id
+
+    if (window.confirm(`Delete ${person.name}?`)){
+      contactService
+      .remove(person)
+      .then(() => {
+        setPersons(persons.filter(p => p.id !== id))
+    })}
+    else {
+      contactService
+      .getAll()
+      .then(list => {
+        setPersons(list)
+      })
     }
   }
   
@@ -60,7 +101,7 @@ const App = () => {
       <br/>
       <Filterform value={filter} onChange={handleFilter}/>
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} removeContact={removeContact} />
     </div>
   )
 }
