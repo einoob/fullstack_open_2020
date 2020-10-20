@@ -3,6 +3,8 @@ import axios from 'axios'
 import Personform from './components/Personform'
 import Filterform from './components/Filterform'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
+import Errormessage from './components/Errormessage'
 import contactService from './services/contactService'
 
 
@@ -11,6 +13,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber] = useState('')
   const [ filter, setFilter] = useState('')
+  const [ message, setMessage] = useState(null)
+  const [ errorMessage, setErrormessage] = useState(null)
 
   useEffect(() => {
     axios
@@ -39,6 +43,17 @@ const App = () => {
         .update(changedContact.id, changedContact)
         .then((returnedContact) => {
           setPersons(persons.map(p => p.name.toLowerCase() === changedContact.name.toLowerCase() ? returnedContact : p))
+          setMessage(`Added ${changedContact.name}`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          setErrormessage(`Information of '${changedContact.name}' has already been removed`)
+          setPersons(persons.filter(p => p.id !== changedContact.id))
+          setTimeout(() => {
+            setErrormessage(null)
+          }, 5000)
         })
       }
       else {
@@ -58,6 +73,10 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
+      setMessage(`Added ${newObj.name}`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
     }
   }
 
@@ -96,6 +115,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
+      <Errormessage errorMessage={errorMessage} />
       <Personform addPerson={addPerson} newName={newName}
       newNumber={newNumber} handleNewName={handleNewName} handleNewNumber={handleNewNumber}/>
       <br/>
