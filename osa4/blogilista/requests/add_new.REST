@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+	"author": "keijo",
+	"title": "keijon seikkailut",
+	"url": "http://keijo.gg/post1",
+	"likes": 420
+}
