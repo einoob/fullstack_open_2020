@@ -10,11 +10,16 @@ blogsRouter.get('/:id', async (request, response, next) => {
   
   try { 
     const blog = await Blog.findById(request.params.id)
+    if (blog) {
+      response.json(blog.toJSON())
+    } else {
+      response.status(404).end()
+    }
   }
   catch (error) {
+    console.log(error);
     next(error)
   }
-  response.json(blog.toJSON())
 })
 
 blogsRouter.post('/', async (request, response, next) => {
