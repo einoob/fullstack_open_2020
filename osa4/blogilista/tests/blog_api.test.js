@@ -27,7 +27,7 @@ test('all blogs are returned', async () => {
   expect(response.body).toHaveLength(helper.initBlogs.length)
 })
 
-test('a spesific blog is within returned blogs', async () => {
+test('a spesific blog  is within returned blogs', async () => {
   const res = await api.get('/api/blogs')
   const titles = res.body.map(r => r.title)
 
