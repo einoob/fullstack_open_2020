@@ -6,23 +6,17 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs.map(blog => blog.toJSON()))
 })
 
-blogsRouter.get('/:id', async (request, response, next) => {
+blogsRouter.get('/:id', async (request, response) => {
   
-  try { 
     const blog = await Blog.findById(request.params.id)
     if (blog) {
       response.json(blog.toJSON())
     } else {
       response.status(404).end()
     }
-  }
-  catch (error) {
-    console.log(error);
-    next(error)
-  }
 })
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
   const blog = new Blog({
@@ -32,46 +26,34 @@ blogsRouter.post('/', async (request, response, next) => {
 		likes: body.likes
   })
 
-  try {
-    const savedBlog = await blog.save()
-    response.json(savedBlog.toJSON())
-  } 
-  catch (error) {
-    next(error)
-  }
-
+  console.log('ADDING:\n', blog)
+  
+  const savedBlog = await blog.save()
+  response.json(savedBlog.toJSON())
 })
 
-blogsRouter.delete('/:id', async (request, response, next) => {
-
-  try {
-    const blog = await Blog.findByIdAndRemove(request.params.id)
-    response.status(204).end()
-  }
-  catch (error) {
-    next(error)
-  }
-  /*
-  Blog.findByIdAndRemove(request.params.id)
-    .then(() => {
-      response.status(204).end()
-    })
-    .catch(error => next(error))*/
+blogsRouter.delete('/:id', async (request, response) => {
+  
+  await Blog.findByIdAndRemove(request.params.id)
+  response.status(204).end()
 })
 
-/*blogsRouter.put('/:id', (request, response, next) => {
+blogsRouter.put(':/id', async (request, response) => {
   const body = request.body
 
-  const note = {
-    content: body.content,
-    important: body.important,
+  const newBlog = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes
   }
 
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
-    .then(updatedNote => {
-      response.json(updatedNote.toJSON())
-    })
-    .catch(error => next(error))
-})*/
+  console.log('router0', newBlog)
+  
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true })
+  console.log('router', updatedBlog)
+  
+  response.json(updatedBlog.toJSON())
+})
 
 module.exports = blogsRouter

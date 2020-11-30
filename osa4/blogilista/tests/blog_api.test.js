@@ -23,11 +23,10 @@ test('blogs are returned as json', async () => {
 
 test('all blogs are returned', async () => {
   const response = await api.get('/api/blogs')
-
   expect(response.body).toHaveLength(helper.initBlogs.length)
 })
 
-test('a spesific blog  is within returned blogs', async () => {
+test('a spesific blog is within returned blogs', async () => {
   const res = await api.get('/api/blogs')
   const titles = res.body.map(r => r.title)
 
@@ -100,7 +99,61 @@ test('a blog can be deleted', async () => {
   expect(titles).not.toContain(blogToDelete.title)
 })
 
+test('if no likes are given, the field is intialized to zero', async() => {
+  
+  const blogNoLikes = {
+    title: "no likesz",
+    author: "disliked person",
+    url: "http://zero.likes/nada"
+  }
+
+  const postedBlog = await api
+  .post('/api/blogs/')
+  .send(blogNoLikes)
+  .expect(200)
+  .expect('Content-Type', /application\/json/)
+  
+  const blogsAtEnd = await helper.blogsInDb()
+  const cmp = blogsAtEnd.find((b) => b.title === 'no likesz')
+  
+  expect(cmp.likes).toEqual(0)
+})
+
+test('blog without url is not added', async () => {
+  const noUrl = {
+    title: "no url",
+    author: "urls are vain",
+    likes: 99
+  }
+
+  const postedBlog = await api
+  .post('/api/blogs')
+  .send(noUrl)
+  .expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initBlogs.length)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
 
+test('likes can be updated', async () => {
+  
+  const newLikes = await helper.blogsInDb()
+ // console.log('id', newLikes.id)
+  console.log('69', newLikes)
+  newLikes[1].likes += 1
+  const updateBlog = newLikes[1]
+  console.log('70', newLikes)
+
+  await api
+  .put(`/api/blogs/${updateBlog.id}`)
+  .send(updateBlog)
+  .expect(200)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  expect(blogsAtEnd[1].likes).toBe(helper.initBlogs[1].likes + 1)
+})
