@@ -142,11 +142,8 @@ afterAll(() => {
 test('likes can be updated', async () => {
   
   const newLikes = await helper.blogsInDb()
- // console.log('id', newLikes.id)
-  console.log('69', newLikes)
   newLikes[1].likes += 1
   const updateBlog = newLikes[1]
-  console.log('70', newLikes)
 
   await api
   .put(`/api/blogs/${updateBlog.id}`)

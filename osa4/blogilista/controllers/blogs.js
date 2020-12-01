@@ -25,8 +25,6 @@ blogsRouter.post('/', async (request, response) => {
 		url: body.url,
 		likes: body.likes
   })
-
-  console.log('ADDING:\n', blog)
   
   const savedBlog = await blog.save()
   response.json(savedBlog.toJSON())
@@ -38,7 +36,7 @@ blogsRouter.delete('/:id', async (request, response) => {
   response.status(204).end()
 })
 
-blogsRouter.put(':/id', async (request, response) => {
+blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
 
   const newBlog = {
@@ -48,10 +46,7 @@ blogsRouter.put(':/id', async (request, response) => {
     likes: body.likes
   }
 
-  console.log('router0', newBlog)
-  
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true })
-  console.log('router', updatedBlog)
   
   response.json(updatedBlog.toJSON())
 })
