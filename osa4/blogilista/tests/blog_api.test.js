@@ -3,7 +3,64 @@ const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+describe('when there is initially one user at db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+		const passwdHsh = await bcrypt.hash('kekeyo', 10)
+		console.log(passwdHsh)
+		
+    const user = new User({username: 'keijo', passwordHash: passwdHsh, name: "Keijo Kuikka"})
+    await user.save()
+  })
+
+  test('user with a unique username is created', async () => {
+		const usersAtStart = await helper.usersInDB()
+		console.log('start', usersAtStart)
+		
+    const newUser = {
+      username: 'peke',
+      name: 'Pekko Pulkkinen',
+      passwordHash: 'pekeyo'
+    }
+
+    await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDB()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+  })
+
+  test('user with an existing username is not created', async () => {
+    const usersAtStart = await helper.usersInDB()
+    const newUser = {
+      username: 'keijo',
+      name: 'Keijo Kapanen',
+      passwordHash: 'yokeijo'
+		}
+		
+		const result = await api
+			.post('/api/users')
+			.send(newUser)
+			.expect(400)
+			.expect('Content-Type', /application\/json/)
+		
+		expect(result.body.error).toContain('`username` to be unique')
+
+		const usersAtEnd = await helper.usersInDB()
+		expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
