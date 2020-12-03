@@ -5,5 +5,5 @@ Content-Type: application/json
 	"author": "peke",
 	"title": "peken panotarinat",
 	"url": "http://peke.gg/post1",
-	"likes": 420
+	"likes": 69
 }

@@ -59,7 +59,41 @@ describe('when there is initially one user at db', () => {
 
 		const usersAtEnd = await helper.usersInDB()
 		expect(usersAtEnd).toHaveLength(usersAtStart.length)
-  })
+	})
+	
+	test('password shorter than 3 characters is not accepted', async () => {
+		const usersAtStart = await helper.usersInDB()
+		const newUser = {
+			username: 'shorty',
+			name: 'Kevin Hart',
+			passwordHash: 'kh'
+		}
+
+		const result = await api
+			.post('/api/users')
+			.send(newUser)
+			.expect(400)
+		
+		const usersAtEnd = await helper.usersInDB()
+		expect(usersAtEnd).toHaveLength(usersAtStart.length)
+	})
+
+	test('username shorter than 3 characters is not accepted', async() => {
+		const usersAtStart = await helper.usersInDB()
+		const newUser = {
+			username: 'kh',
+			name: 'Kevin Hart',
+			passwordHash: 'shortyo'
+		}
+
+		const result = await api
+			.post('/api/users')
+			.send(newUser)
+			.expect(400)
+		
+		const usersAtEnd = await helper.usersInDB()
+		expect(usersAtEnd).toHaveLength(usersAtStart.length)
+	})
 })
 
 beforeEach(async () => {
