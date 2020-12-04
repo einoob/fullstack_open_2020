@@ -21,7 +21,8 @@ loginRouter.post('/', async (req, res) => {
 	}
 
 	const token = getToken.sign(userForToken, process.env.SECRET)
-
+	console.log('bearer ', token)
+	
 	res
 		.status(200)
 		.send({ token, username: user.username, name: user.name} )

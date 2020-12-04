@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VyIiwiaWQiOiI1ZmM4ZTdkMDJjMWMyMTJmODI4ODNhMGUiLCJpYXQiOjE2MDcwODcwODh9.74-izI3cFZkQ-hNCZS2-FAt2FJlPrPU5Ytw2E2iumjc
+
+{
+	"author": "keijo",
+	"title": "keijon seikkailut",
+	"url": "http://keijo.gg/post1",
+	"likes": 420
+}
