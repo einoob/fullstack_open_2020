@@ -3,7 +3,7 @@ const User = require('../models/user')
 
 const initBlogs = [
 	{
-    "author": "keijo",
+    "author": "superkeijo",
     "title": "keijon seikkailut",
     "url": "http://keijo.gg/post1",
     "likes": 420,
@@ -40,6 +40,9 @@ const usersInDB = async () => {
   return users.map(u => u.toJSON())
 }
 
+
+const getAuthHeader = 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VyIiwiaWQiOiI1ZmM4ZTdkMDJjMWMyMTJmODI4ODNhMGUiLCJpYXQiOjE2MDcwODcwODh9.74-izI3cFZkQ-hNCZS2-FAt2FJlPrPU5Ytw2E2iumjc'
+
 module.exports = {
-	initBlogs, nonExistingId, blogsInDb, usersInDB
+	initBlogs, nonExistingId, blogsInDb, usersInDB, getAuthHeader
 }

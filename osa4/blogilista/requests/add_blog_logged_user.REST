@@ -1,9 +1,9 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VyIiwiaWQiOiI1ZmM4ZTdkMDJjMWMyMTJmODI4ODNhMGUiLCJpYXQiOjE2MDcwODcwODh9.74-izI3cFZkQ-hNCZS2-FAt2FJlPrPU5Ytw2E2iumjc
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VyIiwiaWQiOiI1ZmNlMjZjMDE2YjcxOTA2MDc2ZjIyNTEiLCJpYXQiOjE2MDczNDU5MDV9.rw52S2Fd7moC_wugunoiClvpvBm5vo6IOZHp-pcI7dY
 
 {
-	"author": "keijo",
+	"author": "testUser",
 	"title": "keijon seikkailut",
 	"url": "http://keijo.gg/post1",
 	"likes": 420

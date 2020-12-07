@@ -7,10 +7,23 @@ const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
+beforeAll(async () => {
+	await User.deleteMany({})
+	await api
+		.post('/api/users')
+		.send({ username: 'superkeijo', name: 'testiKeijo', passwordHash: 'secureaf' })
+	const login = await api
+		.post('/api/login')
+		.send({ username: 'superkeijo', password: 'secureaf'})
+	console.log('joopa\n', login.body.token)
+	authHeader = 'bearer '.concat(login.body.token)
+	console.log('headertoken on', authHeader)
+	
+})
+
 describe('when there is initially one user at db', () => {
   beforeEach(async () => {
-    await User.deleteMany({})
-
+		await User.deleteOne( {username: 'keijo'} )
 		const passwdHsh = await bcrypt.hash('kekeyo', 10)
 		console.log(passwdHsh)
 		
@@ -101,7 +114,7 @@ beforeEach(async () => {
   let blogObj = new Blog(helper.initBlogs[0])
   await blogObj.save()
   blogObj = new Blog(helper.initBlogs[1])
-  await blogObj.save()
+	await blogObj.save()
 })
 
 test('blogs are returned as json', async () => {
@@ -127,13 +140,14 @@ test('a spesific blog is within returned blogs', async () => {
 test('a valid blog can be added ', async () => {
   const newBlog = {
     title: "New amazing amazeness",
-    author: "Amazing Andy",
+    author: "superkeijo",
     url: "http://andysalibandy.tv/post",
     likes: 0
-  }
-
+	}
+	
   await api
-    .post('/api/blogs')
+		.post('/api/blogs')
+		.set('Authorization', authHeader)
     .send(newBlog)
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -146,15 +160,32 @@ test('a valid blog can be added ', async () => {
   expect(titles).toContain('New amazing amazeness')
 })
 
-test('blog without title is not added', async () => {
-  const newBlog = {
-    author: "Invisible indie band",
+test('blog is not added without token', async () => {
+	const newBlog = {
+		title: "token is taken",
+    author: "superkeijo",
     url: "http://rockpolice.tv/post",
     likes: 0
-  }
-
+	}
   await api
-    .post('/api/blogs')
+		.post('/api/blogs')
+		.set('Authorization', 'bearer ')
+    .send(newBlog)
+    .expect(401)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initBlogs.length)
+})
+
+test('blog without title is not added', async () => {
+  const newBlog = {
+    author: "superkeijo",
+    url: "http://rockpolice.tv/post",
+    likes: 0
+	}
+  await api
+		.post('/api/blogs')
+		.set('Authorization', authHeader)
     .send(newBlog)
     .expect(400)
 
@@ -177,10 +208,12 @@ test('a spesific blog can be viewed', async () => {
 
 test('a blog can be deleted', async () => {
   const blogsAtStart = await helper.blogsInDb()
-  const blogToDelete = blogsAtStart[0]
-
+	const blogToDelete = blogsAtStart[0]
+	console.log('deleting:', blogToDelete)
+	
   await api
-  .delete(`/api/blogs/${blogToDelete.id}`)
+	.delete(`/api/blogs/${blogToDelete.id}`)
+	.set('Authorization', authHeader)
   .expect(204)
 
   const blogsAtEnd = await helper.blogsInDb()
@@ -194,12 +227,12 @@ test('if no likes are given, the field is intialized to zero', async() => {
   
   const blogNoLikes = {
     title: "no likesz",
-    author: "disliked person",
+    author: "superkeijo",
     url: "http://zero.likes/nada"
-  }
-
+	}
   const postedBlog = await api
-  .post('/api/blogs/')
+	.post('/api/blogs/')
+	.set('Authorization', authHeader)
   .send(blogNoLikes)
   .expect(200)
   .expect('Content-Type', /application\/json/)
@@ -213,12 +246,12 @@ test('if no likes are given, the field is intialized to zero', async() => {
 test('blog without url is not added', async () => {
   const noUrl = {
     title: "no url",
-    author: "urls are vain",
+    author: "superkeijo",
     likes: 99
-  }
-
+	}
   const postedBlog = await api
-  .post('/api/blogs')
+	.post('/api/blogs')
+	.set('Authorization', authHeader)
   .send(noUrl)
   .expect(400)
 
@@ -234,10 +267,10 @@ test('likes can be updated', async () => {
   
   const newLikes = await helper.blogsInDb()
   newLikes[1].likes += 1
-  const updateBlog = newLikes[1]
-
+	const updateBlog = newLikes[1]
   await api
-  .put(`/api/blogs/${updateBlog.id}`)
+	.put(`/api/blogs/${updateBlog.id}`)
+	.set('Authorization', authHeader)
   .send(updateBlog)
   .expect(200)
 
