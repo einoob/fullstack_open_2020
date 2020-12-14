@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+	"author": "peke",
+	"title": "peken panotarinat",
+	"url": "http://peke.gg/post1",
+	"likes": 69
+}
