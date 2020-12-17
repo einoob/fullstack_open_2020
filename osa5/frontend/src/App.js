@@ -26,6 +26,13 @@ const App = () => {
 		}
 	}, [])
 
+	const logoutUser = () => {
+		window.localStorage.removeItem('loggedBlogger')
+		setUser(null)
+		setUsername('')
+		setPassword('')
+	}
+
 	const loginForm = () => {
 		return (
 		<form onSubmit={handleLogin}>
@@ -53,11 +60,22 @@ const App = () => {
 	}
 
 	const blogForm = () => {
+		const userJSON = window.localStorage.getItem('loggedBlogger')
+		if (!userJSON) {
+			return (
+				<div>
+					lolxd KEIJO
+				</div>
+			)
+		}
+		const showUser = JSON.parse(userJSON)
 		return (
-		<div>
-			placeboholder
-		</div>
+			<div>
+				{showUser.name} logged in <br/>
+				<button type="submit" onClick={logoutUser}>logout</button>
+			</div>
 		)
+			
 		/*<form onSubmit={addBlog}>
 				<input
 				value={newBlog}
@@ -70,7 +88,6 @@ const App = () => {
 	
 	const handleLogin = async (event) => {
 		event.preventDefault()
-		console.log('logging with', username, password)
 	try {
 		const user = await loginService.login({
 			username, password
