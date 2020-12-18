@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = '/api/blogs'
+const baseUrl = 'http://localhost:3001/api/blogs'
 
 let token = null
 
@@ -16,7 +16,8 @@ const create = async (newObj) => {
 	const config = {
 		headers: { Authorization: token }
 	}
-
+	console.log('at creation', newObj, config)
+	
 	const response = await axios.post(baseUrl, newObj, config)
 	return response.data
 }

@@ -6,6 +6,8 @@ import loginService from './services/login'
 const App = () => {
 	const [blogs, setBlogs] = useState([])
 	const [newBlog, setNewBlog] = useState('')
+	const [newAuthor, setNewAuthor] = useState('')
+	const [newUrl, setNewUrl] = useState('')
 	const [errorMessage, setErrorMessage] = useState(null)
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
@@ -59,6 +61,32 @@ const App = () => {
 		)
 	}
 
+	const addBlog = () => {
+		const newBlogpost = {
+			title: newBlog,
+			author: newAuthor,
+			url: newUrl,
+		}
+		console.log('wants to create', newBlogpost)
+		blogService.create(newBlogpost)
+		setNewUrl('')
+		setNewBlog('')
+		setNewAuthor('')
+		alert('lol catch')
+	}
+
+	const handleBlogChange = ( {target} ) => {
+		setNewBlog(target.value)
+	}
+
+	const handleAuthorChange = ( {target} ) => {
+		setNewAuthor(target.value)
+	}
+
+	const handleUrlChange = ( {target} ) => {
+		setNewUrl(target.value)
+	}
+
 	const blogForm = () => {
 		const userJSON = window.localStorage.getItem('loggedBlogger')
 		if (!userJSON) {
@@ -71,18 +99,31 @@ const App = () => {
 		const showUser = JSON.parse(userJSON)
 		return (
 			<div>
-				{showUser.name} logged in <br/>
+				{showUser.name} logged in &nbsp;
 				<button type="submit" onClick={logoutUser}>logout</button>
+				<form onSubmit={addBlog}>
+					title
+					<input
+						name="title"
+						value={newBlog}
+						onChange={handleBlogChange}
+					/><br/>
+					author
+					<input
+						name="author"
+						value={newAuthor}
+						onChange={handleAuthorChange}
+					/><br/>
+					url
+					<input
+						name="url"
+						value={newUrl}
+						onChange={handleUrlChange}
+					/><br/>
+					<button type="submit">save</button>
+				</form>
 			</div>
 		)
-			
-		/*<form onSubmit={addBlog}>
-				<input
-				value={newBlog}
-				onChange={handleBlogChange}
-				/>
-				<button type="submit">save</button>
-			</form>*/
 		}
 		
 	
